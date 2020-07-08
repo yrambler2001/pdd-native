@@ -46,7 +46,7 @@ export const Question = ({
   totalDisplayingQuestions,
   clickedAnswer,
 }: {
-  theme: any;
+  theme: string;
   number: number | string;
   next: () => void;
   prev: () => void;
@@ -69,10 +69,10 @@ export const Question = ({
   //   question.answers.reduce((prev, curr) => prev + curr.label.length, 0),
   // );
   const img = images[question.id];
-  const displayMargin = !(
-    img &&
-    (question.answers.length >= 5 || question.label.length > 180)
-  );
+  // const displayMargin = !(
+  //   img &&
+  //   (question.answers.length >= 5 || question.label.length > 180)
+  // );
   const reduceLabelSize =
     img && question.answers.length >= 4 && question.label.length > 180;
   // useEffect(() => {
@@ -141,20 +141,36 @@ export const Question = ({
             />
           ),
         )}
-        {displayMargin && <View style={{minHeight: '10%'}} />}
+        {/* {displayMargin && <View style={{minHeight: '10%'}} />} */}
         <View style={{flexDirection: 'row'}}>
           <Btn title={'Prev'} onPress={prev} />
-          <Text
+          <View
             style={{
               marginBottom: 15,
               flex: 1,
-              color: 'white',
               alignSelf: 'center',
-              textAlign: 'center',
             }}>
-            {displayingQuestionIndex || currentIndex + 1} of{' '}
-            {totalDisplayingQuestions || Object.keys(themeObj).length}
-          </Text>
+            <Text
+              style={{
+                flex: 1,
+                color: 'white',
+                alignSelf: 'center',
+                textAlign: 'center',
+              }}>
+              {theme}
+            </Text>
+            <Text
+              style={{
+                // marginBottom: 15,
+                flex: 1,
+                color: 'white',
+                alignSelf: 'center',
+                textAlign: 'center',
+              }}>
+              {displayingQuestionIndex || currentIndex + 1} of{' '}
+              {totalDisplayingQuestions || Object.keys(themeObj).length}
+            </Text>
+          </View>
           <Btn title={'Next'} onPress={next} />
         </View>
       </View>
