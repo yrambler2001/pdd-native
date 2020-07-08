@@ -1,23 +1,28 @@
 /* eslint-disable react-native/no-inline-styles */
 
 import React, {useState, createContext} from 'react';
-import {SafeAreaView, View, StatusBar} from 'react-native';
+import {SafeAreaView, View, StatusBar, ScrollView} from 'react-native';
 
-import {Question} from './views/Question/Question';
 import {Btn} from './Btn';
 import {RandQ} from './RandQ';
-
-const a = require('./all_no_img.json');
-export const QuestionsContext = createContext(a);
+import {sortBy} from 'lodash';
+import ByTheme from './ByTheme';
+const questionsContext = require('./all_no_img.json');
+export const QuestionsContext = createContext(questionsContext);
 declare const global: {HermesInternal: null | {}};
-const q = require('./imagesCompressed.json');
+const images = require('./imagesCompressed.json');
 const App = () => {
-  const [outerPage, setOuterPage] = useState<'random' | 'theme' | null>(null);
-  console.log(Object.keys(q));
+  const [outerPage, setOuterPage] = useState<
+    'random' | 'themeList' | 'theme' | null
+  >(null);
+  const [currentTheme, setCurrentTheme] = useState('');
+  // console.log(Object.keys(q));
+  const themes = Object.keys(questionsContext);
+  // console.log(JSON.stringify(themes));
   return (
     <>
       <StatusBar barStyle="dark-content" />
-      <QuestionsContext.Provider value={{a, q}}>
+      <QuestionsContext.Provider value={{questionsContext, images}}>
         <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
           <View
             style={{
@@ -36,8 +41,30 @@ const App = () => {
             {outerPage === 'random' && (
               <View style={{flex: 1}}>
                 <RandQ />
-                <View style={{flex: 0.1, backgroundColor: 'black'}} />
               </View>
+            )}
+            {outerPage === 'themeList' && (
+              <View style={{flex: 1}}>
+                <ByTheme theme={currentTheme} />
+              </View>
+            )}
+            {outerPage === 'theme' && (
+              <ScrollView>
+                <View>
+                  {sortBy(themes, (theme: string) =>
+                    parseFloat(theme.split(' ')[0]),
+                  ).map((t: string) => (
+                    <Btn
+                      key={t}
+                      onPress={() => {
+                        setCurrentTheme(t);
+                        setOuterPage('themeList');
+                      }}
+                      title={t}
+                    />
+                  ))}
+                </View>
+              </ScrollView>
             )}
             {!outerPage && (
               <View>

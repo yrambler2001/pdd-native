@@ -1,14 +1,23 @@
+/* eslint-disable no-shadow */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useState} from 'react';
 
 import {QuestionsContext} from '../../App';
 import {useContext} from 'react';
-import {Text, StyleSheet, Button, Image} from 'react-native';
+import {Text, Image} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {View, TouchableOpacity} from 'react-native';
 import ImageZoom from 'react-native-image-pan-zoom';
 
-const Btn = ({title, onPress, borderColor = 'black'}) => (
+const Btn = ({
+  title,
+  onPress,
+  borderColor = 'black',
+}: {
+  title: string;
+  onPress: () => void;
+  borderColor?: string;
+}) => (
   <TouchableOpacity onPress={onPress}>
     <View
       style={{
@@ -26,37 +35,57 @@ const Btn = ({title, onPress, borderColor = 'black'}) => (
     </View>
   </TouchableOpacity>
 );
-const trimStr = (str) => str.replace(/\s\s+/g, ' ');
+const trimStr = (str: string): string => str.replace(/\s\s+/g, ' ');
 export const Question = ({
   theme,
   number,
   next,
   prev,
   showAnswers,
-  setClickedQuestion,
   displayingQuestionIndex,
   totalDisplayingQuestions,
   clickedAnswer,
 }: {
   theme: any;
-  number: number;
+  number: number | string;
+  next: () => void;
+  prev: () => void;
+  showAnswers: boolean;
+  displayingQuestionIndex: number;
+  totalDisplayingQuestions: number;
+  clickedAnswer: () => void;
 }) => {
-  // console.log(theme, number);
-  const {a: questionsContext, q} = useContext(QuestionsContext);
+  const {questionsContext, images} = useContext(QuestionsContext);
   const themeObj = questionsContext?.[theme];
   const themeIndexes = Object.keys(themeObj);
   const currentIndex = themeIndexes.indexOf(number + '');
   const question = themeObj?.[number];
-  // console.log(showAnswers);
-  // const a = `../../img/${question.id}.jpg`;
-  // console.log(question);
-  // const [img, setImg] = useState(defImg);
-  // useEffect(() => {
-  //   require(a).then(setImg);
-  // }, [a, setImg]);
 
   const [[width, height], setViewHeight] = useState([0, 0]);
-  console.log(width, height);
+  // const [displayMargin, setDisplayMargin] = useState(true);
+  // const heightRef = useRef(0);
+  // console.log(question.label.length);
+  // console.log(
+  //   question.answers.reduce((prev, curr) => prev + curr.label.length, 0),
+  // );
+  const img = images[question.id];
+  const displayMargin = !(
+    img &&
+    (question.answers.length >= 5 || question.label.length > 180)
+  );
+  const reduceLabelSize =
+    img && question.answers.length >= 4 && question.label.length > 180;
+  // useEffect(() => {
+  //   number;
+  //   setDisplayMargin(true);
+  //   setTimeout(
+  //     () =>
+  //       console.log(heightRef.current, '1') ||
+  //       setDisplayMargin(heightRef.current > 170),
+  //     50,
+  //   );
+  // }, [number]);
+  // console.log(height);
   return (
     <View
       style={{
@@ -66,20 +95,16 @@ export const Question = ({
       <Text
         style={{
           flex: 0,
-          fontSize: 24,
+          fontSize: reduceLabelSize ? 18 : 24,
           fontWeight: '600',
           color: Colors.white,
         }}>
         {trimStr(question?.label)}
       </Text>
-      {/* <TouchableOpacity
-        style={{
-          flex: 1,
-        }}
-        onPress={() => console.log(1)}> */}
       <View
         onLayout={(event) => {
           const {width, height} = event.nativeEvent.layout;
+          // heightRef.current = height;
           setViewHeight([width, height]);
         }}
         style={{
@@ -97,11 +122,10 @@ export const Question = ({
               marginTop: 10,
               marginBottom: 10,
             }}
-            source={{uri: `data:image/jpeg;base64,${q[question.id]}`}}
+            source={{uri: `data:image/jpeg;base64,${img}`}}
           />
         </ImageZoom>
       </View>
-      {/* </TouchableOpacity> */}
       <View>
         {question?.answers?.map?.(
           (a: {label: string; correct: boolean | undefined}, index: number) => (
@@ -117,6 +141,7 @@ export const Question = ({
             />
           ),
         )}
+        {displayMargin && <View style={{minHeight: '10%'}} />}
         <View style={{flexDirection: 'row'}}>
           <Btn title={'Prev'} onPress={prev} />
           <Text

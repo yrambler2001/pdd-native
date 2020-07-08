@@ -1,6 +1,6 @@
 {
   "name": "yrambler2001_PDR",
-  "version": "0.0.1",
+  "version": "1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -9,9 +9,10 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "d": "adb shell input keyevent 82",
-    "build-android":"cd android && ./gradlew assembleRelease"
+    "build-android": "cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.157",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-image-pan-zoom": "^2.1.12"
